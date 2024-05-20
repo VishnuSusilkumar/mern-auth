@@ -36,7 +36,8 @@ export const signin = async (req, res, next) => {
 
 export const google = async (req, res, next) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const { email, name, photo } = req.body;
+    let user = await User.findOne({ email });
     if (user) {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
       const { password: hashedPassword, ...rest } = user._doc;
@@ -55,13 +56,14 @@ export const google = async (req, res, next) => {
       const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
       const newUser = new User({
         username:
-          req.body.name.split(" ").join("").toLowerCase() +
+          name.split(" ").join("").toLowerCase() +
           Math.floor(Math.random() * 10000).toString(),
-        email: req.body.email,
+        email,
         password: hashedPassword,
-        profilePicture: req.body.photo,
+        profilePicture: photo,
       });
       await newUser.save();
+      user = await User.findOne({ email });
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
       const { password: hashedPassword2, ...rest } = user._doc;
       const expireDate = new Date(Date.now() + 3600000);

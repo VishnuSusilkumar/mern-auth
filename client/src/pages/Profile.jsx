@@ -52,7 +52,7 @@ function Profile() {
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setFormData({ ...formData, ProfilePicture: downloadURL });
+          setFormData({ ...formData, profilePicture: downloadURL });
         });
       }
     );
@@ -124,7 +124,7 @@ function Profile() {
           onChange={(e) => setImage(e.target.files[0])}
         />
         <img
-          src={formData.ProfilePicture || currentUser.ProfilePicture}
+          src={formData.profilePicture || currentUser.profilePicture}
           alt="Profile"
           className="h-24 w-24 self-center cursor-pointer rounded-full object-cover mt-2"
           onClick={() => fileRef.current.click()}
