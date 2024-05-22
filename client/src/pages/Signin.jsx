@@ -1,18 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   signInStart,
   signInSuccess,
   signInFailure,
+  setErrorToNull,
 } from "../redux/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import OAuth from "../components/OAuth";
 
 function SignIn() {
   const [formData, setFormData] = useState({});
-  const { loading, error } = useSelector((state) => state.user);
+  const { loading, error, currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    dispatch(setErrorToNull());
+    if (currentUser) {
+      navigate("/");
+    }
+  }, [currentUser, navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -31,7 +39,7 @@ function SignIn() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      
+
       if (data.success === false) {
         dispatch(signInFailure(data));
         return;
@@ -67,7 +75,7 @@ function SignIn() {
         >
           {loading ? "loading..." : "Sign In"}
         </button>
-        <OAuth/>
+        <OAuth />
       </form>
       <div className="flex gap-2 mt-5">
         <p>Don't have an account?</p>
@@ -75,7 +83,9 @@ function SignIn() {
           <span className="text-blue-500">Sign Up</span>
         </Link>
       </div>
-      <p className="text-red-700 mt-5">{error ? error.message || "Something went wrong!" : ''}</p>
+      <p className="text-red-700 mt-5">
+        {error ? error.message || "Something went wrong!" : ""}
+      </p>
     </div>
   );
 }
