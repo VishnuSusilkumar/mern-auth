@@ -1,25 +1,24 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import About from "./pages/About";
-import SignIn from "./pages/Signin";
-import SignUp from "./pages/SignUp";
-import Profile from "./pages/Profile";
-import Header from "./components/Header";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import AboutPage from "./pages/AboutPage";
+import SignInPage from "./pages/SigninPage";
+import SignUpPage from "./pages/SignUpPage";
+import ProfilePage from "./pages/ProfilePage"
 import PrivateRoute from "./components/PrivateRoute";
+import AdminSignin from "./pages/AdminSignin";
 
 function App() {
   return (
     <BrowserRouter>
-      {/* Header */}
-      <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/sign-in" element={<SignIn />} />
-        <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/sign-in" element={<SignInPage />} />
+        <Route path="/sign-up" element={<SignUpPage />} />
         <Route element={<PrivateRoute />}>
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
+        <Route path="/admin/sign-in" element={<AdminSignin />} />
       </Routes>
     </BrowserRouter>
   );

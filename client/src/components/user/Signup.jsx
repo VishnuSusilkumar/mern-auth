@@ -1,26 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  signInStart,
-  signInSuccess,
-  signInFailure,
-  setErrorToNull,
-} from "../redux/user/userSlice";
-import { useDispatch, useSelector } from "react-redux";
-import OAuth from "../components/OAuth";
+import OAuth from "./OAuth";
 
-function SignIn() {
+function SignUp() {
   const [formData, setFormData] = useState({});
-  const { loading, error, currentUser } = useSelector((state) => state.user);
-  const dispatch = useDispatch();
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    dispatch(setErrorToNull());
-    if (currentUser) {
-      navigate("/");
-    }
-  }, [currentUser, navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -30,8 +16,9 @@ function SignIn() {
     e.preventDefault();
 
     try {
-      dispatch(signInStart());
-      const res = await fetch("/api/auth/signin", {
+      setLoading(true);
+      setError(false);
+      const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -39,22 +26,29 @@ function SignIn() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-
+      setLoading(false);
       if (data.success === false) {
-        dispatch(signInFailure(data));
+        setError(true);
         return;
       }
-      dispatch(signInSuccess(data));
-      navigate("/");
+      navigate('/sign-in')
     } catch (error) {
-      dispatch(signInFailure(error));
+      setLoading(false);
+      setError(true);
     }
   };
 
   return (
     <div className="p-3 max-w-lg mx-auto">
-      <h1 className="text-3xl text-center font-semibold my-7">Sign In</h1>
+      <h1 className="text-3xl text-center font-semibold my-7">Sign Up</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <input
+          type="text"
+          placeholder="username"
+          id="username"
+          className="bg-slate-100 p-3 rounded-lg"
+          onChange={handleChange}
+        />
         <input
           type="email"
           placeholder="Email"
@@ -73,21 +67,19 @@ function SignIn() {
           disabled={loading}
           className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
         >
-          {loading ? "loading..." : "Sign In"}
+          {loading ? "loading..." : "Sign Up"}
         </button>
-        <OAuth />
+        <OAuth/>
       </form>
       <div className="flex gap-2 mt-5">
-        <p>Don't have an account?</p>
-        <Link to="/sign-up">
-          <span className="text-blue-500">Sign Up</span>
+        <p>Have an account?</p>
+        <Link to="/sign-in">
+          <span className="text-blue-500">Sign In</span>
         </Link>
       </div>
-      <p className="text-red-700 mt-5">
-        {error ? error.message || "Something went wrong!" : ""}
-      </p>
+      <p className="text-red-700 mt-5">{error && "Something went wrong!"}</p>
     </div>
   );
 }
 
-export default SignIn;
+export default SignUp;
